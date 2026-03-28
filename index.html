@@ -71,8 +71,8 @@ body{background:#080400;font-family:"Cormorant Garamond",serif;overflow:hidden;w
 .scene.active .item:nth-child(9){transition-delay:1.3s;}
 
 /* TYPOGRAPHY */
-.tag{font-family:"Cinzel",serif;font-size:clamp(8px,1.3vw,12px);color:var(--gl);letter-spacing:5px;text-transform:uppercase;opacity:.85;text-align:center;}
-.arabic{font-family:"Amiri",serif;font-size:clamp(13px,2.5vw,22px);color:var(--gold);text-align:center;line-height:1.8;letter-spacing:2px;}
+.tag{font-family:"Cinzel",serif;font-size:clamp(11px,1.7vw,16px);color:var(--gl);letter-spacing:5px;text-transform:uppercase;opacity:.85;text-align:center;}
+.arabic{font-family:"Amiri",serif;font-size:clamp(17px,3.2vw,28px);color:var(--gold);text-align:center;line-height:1.8;letter-spacing:2px;}
 .script-big{font-family:"Cinzel",cursive;font-size:clamp(38px,9vw,82px);line-height:1.1;text-align:center;
   background:linear-gradient(135deg,#8b6914 0%,#f0d080 40%,#fff8dc 55%,#f0d080 70%,#8b6914 100%);
   background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -83,14 +83,14 @@ body{background:#080400;font-family:"Cormorant Garamond",serif;overflow:hidden;w
   color:var(--gl);
 }
 @keyframes shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
-.script-med{font-family:"Cinzel",cursive;font-size:clamp(24px,5.5vw,50px);color:var(--gl);text-align:center;line-height:1.2;}
+.script-med{font-family:"Cinzel",cursive;font-size:clamp(26px,6vw,54px);color:var(--gl);text-align:center;line-height:1.2;}
 .monogram{font-family:"Cinzel",cursive;font-size:clamp(60px,15vw,128px);line-height:1;text-align:center;
   background:linear-gradient(135deg,#8b6914,#f0d080,#fff8dc,#f0d080,#8b6914);
   background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
   animation:shimmer 4s linear infinite;filter:drop-shadow(0 0 30px rgba(201,168,76,.45));}
-.body{font-family:"Cormorant Garamond",serif;font-size:clamp(12px,2vw,18px);color:rgba(240,208,128,.85);text-align:center;font-style:italic;line-height:1.75;}
-.strong{font-family:"Cormorant Garamond",serif;font-size:clamp(14px,2.5vw,22px);color:var(--gl);text-align:center;font-style:italic;line-height:1.65;font-weight:600;}
-.accent{font-family:"Cinzel",serif;font-size:clamp(10px,1.6vw,14px);color:var(--gold);letter-spacing:4px;text-align:center;}
+.body{font-family:"Cormorant Garamond",serif;font-size:clamp(15px,2.5vw,22px);color:rgba(240,208,128,.85);text-align:center;font-style:italic;line-height:1.75;}
+.strong{font-family:"Cormorant Garamond",serif;font-size:clamp(17px,3vw,26px);color:var(--gl);text-align:center;font-style:italic;line-height:1.65;font-weight:600;}
+.accent{font-family:"Cinzel",serif;font-size:clamp(12px,2vw,17px);color:var(--gold);letter-spacing:4px;text-align:center;}
 .big-time{font-family:"Cormorant Garamond",serif;font-size:clamp(30px,7.5vw,68px);color:var(--gl);font-style:italic;line-height:1;font-weight:300;text-align:center;}
 
 .heart{font-size:clamp(20px,3.5vw,32px);color:var(--gold);animation:hb 1.6s ease-in-out infinite;display:block;text-align:center;}
@@ -108,8 +108,8 @@ body{background:#080400;font-family:"Cormorant Garamond",serif;overflow:hidden;w
 .qr-row{display:flex;gap:20px;align-items:center;justify-content:center;margin-top:4px;}
 .qr-box{display:flex;flex-direction:column;align-items:center;gap:6px;}
 .qr-box img{width:clamp(80px,14vw,120px);height:clamp(80px,14vw,120px);object-fit:contain;
-  border:2px solid rgba(201,168,76,.5);padding:4px;background:rgba(255,255,255,.08);}
-.qr-label{font-family:"Cinzel",serif;font-size:clamp(8px,1.2vw,11px);color:var(--gold);letter-spacing:3px;text-transform:uppercase;}
+  border:2px solid rgba(201,168,76,.5);padding:4px;background:transparent;}
+.qr-label{font-family:"Cinzel",serif;font-size:clamp(11px,1.6vw,14px);color:var(--gold);letter-spacing:3px;text-transform:uppercase;}
 
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
 .float{animation:float 3.5s ease-in-out infinite;}
@@ -328,6 +328,25 @@ document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(cur+1);if(e.k
 let tx=0;
 document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});
 document.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>45)go(cur+(dx<0?1:-1));});
+
+function recolorQR(img){
+  const c=document.createElement("canvas");
+  c.width=img.naturalWidth;c.height=img.naturalHeight;
+  const ctx=c.getContext("2d");
+  ctx.drawImage(img,0,0);
+  const d=ctx.getImageData(0,0,c.width,c.height);
+  for(let i=0;i<d.data.length;i+=4){
+    const lum=d.data[i]*0.299+d.data[i+1]*0.587+d.data[i+2]*0.114;
+    if(lum<128){d.data[i]=201;d.data[i+1]=168;d.data[i+2]=76;d.data[i+3]=255;}
+    else{d.data[i+3]=0;}
+  }
+  ctx.putImageData(d,0,0);
+  img.src=c.toDataURL("image/png");
+}
+document.querySelectorAll(".qr-box img").forEach(img=>{
+  if(img.complete&&img.naturalWidth)recolorQR(img);
+  else img.addEventListener("load",()=>recolorQR(img),{once:true});
+});
 </script>
 </body>
 </html>
