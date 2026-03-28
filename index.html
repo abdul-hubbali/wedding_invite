@@ -293,7 +293,7 @@ body{background:#080400;font-family:"Cormorant Garamond",serif;overflow:hidden;w
     </div>
     <div class="item"><p class="tag" style="letter-spacing:5px">With Best Compliments From</p></div>
     <div class="item"><div class="divider"><div class="dl"></div><div class="dg"></div><div class="dl"></div></div></div>
-    <div class="item"><p class="script-med" style="font-size:clamp(20px,4.5vw,40px)">Mr. &amp; Mrs. Shoukatali Hubbali</p></div>
+    <div class="item"><p class="script-med" style="font-size:clamp(20px,4.5vw,40px)">Mr. &amp; Mrs. Hubbali</p></div>
   </div>
 </div>
 
@@ -307,9 +307,9 @@ for(let i=0;i<55;i++){const p=document.createElement("div");p.className="particl
 
 const scenes=Array.from(document.querySelectorAll(".scene"));
 const N=scenes.length;
-let cur=0,timer=null;
+let cur=0,timer=null,userNavigated=false;
 const dotsEl=document.getElementById("dots");
-scenes.forEach((_,i)=>{const d=document.createElement("div");d.className="dot"+(i===0?" on":"");d.onclick=()=>go(i);dotsEl.appendChild(d);});
+scenes.forEach((_,i)=>{const d=document.createElement("div");d.className="dot"+(i===0?" on":"");d.onclick=()=>goManual(i);dotsEl.appendChild(d);});
 
 function go(idx){
   if(timer)clearTimeout(timer);
@@ -317,17 +317,23 @@ function go(idx){
   cur=((idx%N)+N)%N;
   prev.classList.remove("active");
   setTimeout(()=>{scenes[cur].classList.add("active");dotsEl.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("on",i===cur));},420);
-  timer=setTimeout(()=>go(cur+1),8000);
+  if(!userNavigated) timer=setTimeout(()=>go(cur+1),8000);
+}
+
+function goManual(idx){
+  userNavigated=true;
+  if(timer)clearTimeout(timer);
+  go(idx);
 }
 
 scenes[0].classList.add("active");
 timer=setTimeout(()=>go(1),8000);
-document.getElementById("next").onclick=()=>go(cur+1);
-document.getElementById("prev").onclick=()=>go(cur-1);
-document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1);});
+document.getElementById("next").onclick=()=>goManual(cur+1);
+document.getElementById("prev").onclick=()=>goManual(cur-1);
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")goManual(cur+1);if(e.key==="ArrowLeft")goManual(cur-1);});
 let tx=0;
 document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});
-document.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>45)go(cur+(dx<0?1:-1));});
+document.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>45)goManual(cur+(dx<0?1:-1));});
 
 function recolorQR(img){
   const c=document.createElement("canvas");
