@@ -125,6 +125,83 @@ body{background:#080400;font-family:"Cormorant Garamond",serif;overflow:hidden;w
 #dots{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20;}
 .dot{width:7px;height:7px;border-radius:50%;border:1px solid var(--gold);background:rgba(201,168,76,.2);cursor:pointer;transition:all .3s;}
 .dot.on{background:var(--gold);transform:scale(1.4);}
+
+/* ═══ RESPONSIVE ═══ */
+
+/* Tablet / large mobile */
+@media (max-width:768px) {
+  .scene { padding:58px 32px 48px; }
+  #lanterns { padding:0 56px; }
+  .event-card { padding:clamp(10px,2.5vw,24px) clamp(14px,3.5vw,44px); }
+}
+
+/* Mobile */
+@media (max-width:600px) {
+  #frame { inset:8px; }
+  #frame::after { inset:4px; }
+  .corner { width:34px; height:34px; }
+  .corner.tl{top:8px;left:8px;}
+  .corner.tr{top:8px;right:8px;}
+  .corner.bl{bottom:8px;left:8px;}
+  .corner.br{bottom:8px;right:8px;}
+  #lanterns { padding:0 36px; }
+  .scene { padding:52px 14px 46px; }
+  .scene-inner { gap:5px; }
+  .couple-name { font-size:clamp(26px,8.5vw,82px); }
+  .script-big  { font-size:clamp(26px,8.5vw,82px); }
+  .script-med  { font-size:clamp(20px,6vw,54px); }
+  .monogram    { font-size:clamp(44px,14vw,128px); }
+  .big-time    { font-size:clamp(24px,7vw,68px); }
+  .tag         { font-size:clamp(10px,2.8vw,16px); letter-spacing:3px; }
+  .arabic      { font-size:clamp(15px,4vw,28px); }
+  .body        { font-size:clamp(13px,3.2vw,22px); }
+  .strong      { font-size:clamp(14px,3.5vw,26px); }
+  .accent      { font-size:clamp(10px,2.8vw,17px); }
+  .event-card  { width:min(98%,480px); padding:12px 16px; }
+  .event-card::before { inset:4px; }
+  .divider     { width:min(88%,360px); }
+  .qr-row      { gap:14px; flex-wrap:wrap; justify-content:center; }
+  .qr-box img  { width:clamp(72px,18vw,120px); height:clamp(72px,18vw,120px); }
+  .qr-label    { font-size:clamp(9px,2.2vw,14px); }
+  .nav-btn     { width:36px; height:36px; font-size:15px; }
+  #prev { left:4px; }
+  #next { right:4px; }
+  #dots { bottom:10px; gap:7px; }
+  .dot { width:6px; height:6px; }
+}
+
+/* Small / compact phones */
+@media (max-width:380px) {
+  #lanterns { padding:0 20px; }
+  .scene { padding:50px 10px 44px; }
+  .couple-name { font-size:clamp(22px,7.5vw,82px); }
+  .script-big  { font-size:clamp(22px,7.5vw,82px); }
+  .monogram    { font-size:clamp(38px,13vw,128px); }
+}
+
+/* Landscape on phones — limited vertical space */
+@media (max-height:480px) and (orientation:landscape) {
+  #lanterns { display:none; }
+  #frame { inset:6px; }
+  .corner { width:28px; height:28px; }
+  .corner.tl{top:6px;left:6px;}
+  .corner.tr{top:6px;right:6px;}
+  .corner.bl{bottom:6px;left:6px;}
+  .corner.br{bottom:6px;right:6px;}
+  .scene { padding:36px 24px 36px; }
+  .scene-inner { gap:3px; }
+  .couple-name { font-size:clamp(18px,5vw,60px); }
+  .script-big  { font-size:clamp(18px,5vw,60px); }
+  .monogram    { font-size:clamp(32px,9vw,90px); }
+  .big-time    { font-size:clamp(20px,5vw,56px); }
+  .nav-btn     { width:32px; height:32px; }
+  #dots { bottom:6px; }
+}
+
+/* iOS 100vh fix */
+@supports (-webkit-touch-callout:none) {
+  body { height:-webkit-fill-available; }
+}
 </style>
 </head>
 <body>
@@ -331,9 +408,13 @@ timer=setTimeout(()=>go(1),8000);
 document.getElementById("next").onclick=()=>goManual(cur+1);
 document.getElementById("prev").onclick=()=>goManual(cur-1);
 document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")goManual(cur+1);if(e.key==="ArrowLeft")goManual(cur-1);});
-let tx=0;
-document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});
-document.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>45)goManual(cur+(dx<0?1:-1));});
+let tx=0,ty=0;
+document.addEventListener("touchstart",e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+document.addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy))goManual(cur+(dx<0?1:-1));
+});
 
 function recolorQR(img){
   const c=document.createElement("canvas");
