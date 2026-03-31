@@ -47,6 +47,9 @@ body{
   animation:shimmer 3s linear infinite;
   filter:drop-shadow(0 0 24px rgba(201,168,76,.45));
   text-align:center;line-height:1.2;
+  line-height: 1.4; /* Changed from 1.2 to 1.4 */
+  padding-top: 10px; /* Added padding to prevent clipping at the very top */
+  overflow: visible; /* Ensures any slight overflow isn't sliced */
 }
 @keyframes shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
 
