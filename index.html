@@ -146,7 +146,7 @@
 <div id="curtain"></div>
 
 <script>
-/* particles */
+/* ── Particles ── */
 const pw = document.getElementById('particles');
 for(let i=0;i<60;i++){
   const p = document.createElement('div');
@@ -163,7 +163,110 @@ const overlay  = document.getElementById('env-overlay');
 const envScene = document.getElementById('envScene');
 const glowRing = document.getElementById('glow-ring');
 const curtain  = document.getElementById('curtain');
+const langModal= document.getElementById('lang-modal');
 
+/* ── Language Alternator ── */
+const CONTENT = {
+  en: {
+    title:    "You're Invited",
+    subtitle: "To the Wedding Celebration of",
+    names:    "Abdul Kadir & Mubeenabanu",
+    btn:      "Open Invitation"
+  },
+  kn: {
+    title:    "ನೀವು ಆಮಂತ್ರಿತರಾಗಿದ್ದೀರಿ",
+    subtitle: "ವಿವಾಹ ಮಹೋತ್ಸವಕ್ಕೆ",
+    names:    "ಅಬ್ದುಲ್ ಕಾದಿರ್ & ಮುಬೀನಾಬಾನು",
+    btn:      "ಆಮಂತ್ರಣ ತೆರೆಯಿರಿ"
+  }
+};
+
+const titleEl    = document.querySelector('.welcome-title');
+const subtitleEl = document.querySelector('.welcome-subtitle');
+const namesEl    = document.querySelector('.couple-names');
+const btnSpan    = enterBtn.querySelector('span');
+const fadeEls    = [titleEl, subtitleEl, namesEl];
+
+let currentLang = 'en';
+let switching   = false;
+let langTimer   = null;
+
+/* ── Language Transition Particles ── */
+function spawnLangParticles() {
+  const n = 32;
+  // Anchor burst to the centre of the welcome block
+  const rect = welcome.getBoundingClientRect();
+  const cx   = rect.left + rect.width  * 0.5;
+  const cy   = rect.top  + rect.height * 0.42; // slightly above centre (text zone)
+
+  for (let i = 0; i < n; i++) {
+    const el  = document.createElement('div');
+    el.className = 'lang-particle';
+
+    // Spawn within the text zone with some scatter
+    const sx  = cx + (Math.random() - 0.5) * rect.width  * 0.55;
+    const sy  = cy + (Math.random() - 0.5) * rect.height * 0.38;
+
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = 40 + Math.random() * 130;
+    const tx    = (Math.cos(angle) * dist).toFixed(1) + 'px';
+    const ty    = (Math.sin(angle) * dist).toFixed(1) + 'px';
+    const size  = (Math.random() * 4 + 1.5).toFixed(1);
+    const dur   = (0.45 + Math.random() * 0.45).toFixed(2) + 's';
+    const dl    = (Math.random() * 0.18).toFixed(2) + 's';
+    // Mix gold tones
+    const gold  = Math.random() > 0.45
+      ? 'rgba(240,208,128,.92)'
+      : 'rgba(201,168,76,.80)';
+
+    el.style.cssText =
+      `left:${sx}px;top:${sy}px;width:${size}px;height:${size}px;` +
+      `background:${gold};--tx:${tx};--ty:${ty};--dur:${dur};--dl:${dl};`;
+
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }
+}
+
+function switchLang() {
+  if (switching) return;
+  switching = true;
+
+  // Fire particles first
+  spawnLangParticles();
+
+  // Fade out text a beat after particles start
+  setTimeout(() => {
+    fadeEls.forEach(el => el.style.opacity = '0');
+    btnSpan.style.opacity = '0';
+  }, 80);
+
+  setTimeout(() => {
+    currentLang = currentLang === 'en' ? 'kn' : 'en';
+    const c = content_for(currentLang);
+
+    titleEl.textContent    = c.title;
+    subtitleEl.textContent = c.subtitle;
+    namesEl.textContent    = c.names;
+    btnSpan.textContent    = c.btn;
+
+    const isKn = currentLang === 'kn';
+    [...fadeEls, btnSpan].forEach(el => el.classList.toggle('kn-font', isKn));
+
+    // Fade back in
+    fadeEls.forEach(el => el.style.opacity = '1');
+    btnSpan.style.opacity = '1';
+
+    switching = false;
+  }, 480);
+}
+
+function content_for(lang){ return CONTENT[lang]; }
+
+// Start alternating after a short initial display pause
+langTimer = setInterval(switchLang, 3500);
+
+/* ── Petals ── */
 function spawnPetals(){
   const n = 28;
   for(let i=0;i<n;i++){
@@ -183,35 +286,30 @@ function spawnPetals(){
   }
 }
 
-const langModal = document.getElementById('lang-modal');
-const btnEnglish = document.getElementById('btnEnglish');
-const btnKannada = document.getElementById('btnKannada');
+/* ── Language Modal Buttons ── */
+document.getElementById('btnEnglish').addEventListener('click', ()=>{ window.location.href = 'invitation.html'; });
+document.getElementById('btnKannada').addEventListener('click', ()=>{ window.location.href = 'invitation_kn.html'; });
 
-btnEnglish.addEventListener('click', ()=>{ window.location.href = 'invitation.html'; });
-btnKannada.addEventListener('click', ()=>{ window.location.href = 'invitation_kn.html'; });
-
+/* ── Open Invitation Button ── */
 enterBtn.addEventListener('click', ()=>{
-  // play music
+  // Stop the language alternator
+  clearInterval(langTimer);
+  langTimer = null;
+
   audio.play().catch(()=>{});
 
-  // fade welcome content away
   welcome.classList.add('fading');
-
-  // reveal envelope overlay
   overlay.classList.add('show');
 
-  // glow bloom
   setTimeout(()=> glowRing.classList.add('bloom'), 350);
 
-  // open envelope + petals
   setTimeout(()=>{
     envScene.classList.add('open');
     spawnPetals();
   }, 750);
 
-  // Drop curtain, then show language selection
   setTimeout(()=> curtain.classList.add('drop'), 3000);
-  setTimeout(()=>{ langModal.classList.add('show'); }, 3800);
+  setTimeout(()=> langModal.classList.add('show'), 3800);
 });
 </script>
 </body>

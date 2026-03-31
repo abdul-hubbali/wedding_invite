@@ -115,6 +115,38 @@ body{
   #enterBtn{padding:18px 50px;}
 }
 
+/* ── Language switch transitions ── */
+.welcome-title,
+.welcome-subtitle,
+.couple-names{transition:opacity .4s ease;}
+#enterBtn span{transition:opacity .4s ease;}
+
+/* Lock button width so it never resizes between languages */
+#enterBtn{
+  min-width:clamp(240px,38vw,340px);
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+#enterBtn span{display:block;text-align:center;}
+
+/* Kannada font override (applied via JS) */
+.kn-font{
+  font-family:"Noto Sans Kannada","Cormorant Garamond",serif !important;
+  letter-spacing:0.5px;
+}
+
+/* Language-transition burst particles */
+.lang-particle{
+  position:fixed;border-radius:50%;
+  pointer-events:none;z-index:6;opacity:0;
+  animation:langPop var(--dur) ease-out var(--dl) forwards;
+}
+@keyframes langPop{
+  0%  {opacity:0;transform:translate(0,0) scale(0);}
+  18% {opacity:1;}
+  100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.15);}
+}
+
 /* ════════════════════════════════════
    ENVELOPE OVERLAY
 ════════════════════════════════════ */
