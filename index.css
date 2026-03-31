@@ -119,25 +119,33 @@ body{
 }
 
 /* ── Language switch transitions ── */
+/* Enhanced Transition States */
 .welcome-title,
 .welcome-subtitle,
-.couple-names{transition:opacity .4s ease;}
-#enterBtn span{transition:opacity .4s ease;}
-
-/* Lock button width so it never resizes between languages */
-#enterBtn{
-  min-width:clamp(240px,38vw,340px);
-  padding-left:0 !important;
-  padding-right:0 !important;
-}
-#enterBtn span{display:block;text-align:center;}
-
-/* Kannada font override (applied via JS) */
-.kn-font{
-  font-family:"Noto Sans Kannada","Cormorant Garamond",serif !important;
-  letter-spacing:0.5px;
+.couple-names,
+#enterBtn span {
+    transition: 
+        opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+        transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        filter 0.6s ease;
+    will-change: opacity, transform, filter;
 }
 
+/* The "Hidden" state during the swap */
+.text-switching {
+    opacity: 0 !important;
+    transform: scale(0.98);
+    filter: blur(4px);
+}
+
+/* Ensure the Kannada font doesn't shift the layout */
+.kn-font {
+    font-family: "Noto Sans Kannada", serif !important;
+    line-height: 1.6 !important;
+    /* Adjust vertical alignment to match Cinzel's baseline */
+    position: relative;
+    top: -2px; 
+}
 /* Language-transition burst particles */
 .lang-particle{
   position:fixed;border-radius:50%;
